@@ -1,0 +1,10 @@
+# APS de Linguagens de Programação
+## Implementação em D do jogo "Quem eu sou?" 
+
+
+
+
+
+Alunos: 
+> Higor Luiz F. Celante
+> Henrique Ricardo Figueira
