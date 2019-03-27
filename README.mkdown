@@ -7,4 +7,5 @@
 
 Alunos: 
 > Higor Luiz F. Celante
+\\
 > Henrique Ricardo Figueira
