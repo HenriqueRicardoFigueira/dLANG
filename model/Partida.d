@@ -17,9 +17,14 @@ Setters
         return numplayers + 1;
     }
 
+    public this(){
+        /*
+        Construtor da partida / tema / player
+        */
+    }
 
 }
-class tema{
+class tema : partida {
     private string nomedotema = set_nomedotema();
     private enum personas = set_iniciapersonas();
 /*
@@ -44,11 +49,14 @@ Getters
         return 0;
     }
 
+    public this(){
+        super();
+    }
 }
 
 
 
-class player{
+class player : partida {
     private int id = set_idplayer();
     private string nomedoplayer = set_nomedoplayer();
     public persona = set_persona();
@@ -67,4 +75,11 @@ Seters
 /*
 Getters
 */
+
+
+
+
+    public this(){
+        super();
+    }
 }
