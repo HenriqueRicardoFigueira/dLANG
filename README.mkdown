@@ -2,7 +2,7 @@
 ## Implementação em D do jogo "Quem eu sou?" 
 
 
-
+> dub --build=release
 
 
 Alunos: 
