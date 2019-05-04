@@ -1,7 +1,7 @@
 doctype html
 html
 	head
-		title #{id} - WebChat
+		title #{id} - Who I' am
 		style.
 			textarea, input { width: 100%; }
 			textarea { resize: vertical; }

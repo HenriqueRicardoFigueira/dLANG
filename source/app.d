@@ -7,23 +7,43 @@ class WebChats
     void get(HTTPServerResponse res)
     {
         res.render!("index.dt");
+    }   
+    
+    void getNewplayer(HTTPServerResponse res)
+    {
+        res.render!("newplayer.dt");
     }
 
     void getRoom(string id, string name, string tema)
-    {
+    {   
         string[] members;
         auto messages = getOrCreateRoom(id).messages;
-		m_rooms[id].addMembers(name);
         members = m_rooms[id].members;
-        //Player[name, id, 0, true] = px;
-        render!("room.dt", id, name, messages, members,tema);
+        bool x = m_rooms[id].checkPlayer(name);
+        if(x == false){
+            managementRoom(id, name, tema);
+            render!("room.dt", id, name, messages, members,tema);
+        } else {
+            
+            render!("room.dt", id, name, messages, members,tema);
+        }
     }
 
+    void managementRoom(string id, string name, string tema){
+        
+        auto px = new Player(name, id, 0, true);
+        string pname = px.name;
+        m_rooms[id].addMembers(pname);
+        m_rooms[id].tema = tema;
+        
+    };
+   
     void postRoom(string id, string name, string message)
 	{
 		if (message.length)
 			getOrCreateRoom(id).addMessage(name, message);
-		redirect("room?id="~id.urlEncode~"&name="~name.urlEncode);
+        string tema = m_rooms[id].tema;
+		redirect("room?id="~id.urlEncode~"&name="~name.urlEncode~"&tema="~tema.urlEncode);
 	}
 
     private Room getOrCreateRoom(string id)
@@ -35,11 +55,11 @@ class WebChats
 
 final class Player{
     string name;
-    int room;
+    string room;
     int score;
     bool master;
 
-    this(string name, int room, int score, bool master){
+    this(string name, string room, int score, bool master){
         this.name = name;
         this.room = room;
         this.score = score;
@@ -62,11 +82,15 @@ final class Room {
     {
         members ~= name;
     }
-    /*
-    void removeMembers(string name)
+
+    bool checkPlayer(string name)
     {
-        members = members.remove!(x => x == name);
-    }*/
+        foreach(string x; members){
+            if(x == name)
+                return true;
+        }
+        return false;
+    }
 }
 
 

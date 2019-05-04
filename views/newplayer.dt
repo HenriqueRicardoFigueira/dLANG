@@ -5,10 +5,7 @@ html
 	body
 		h1 Welcome to Who I'am
 		p Please enter the name of a chat room to join the game:
-		form(action='/newplayer', method='GET')
-			button(type='submit') New Player
-		
-
+	
 		form(action="/room", method="GET")
 			p
 				label(for="id") Chat room:
@@ -17,8 +14,5 @@ html
 				label(for="name") Your name:
 				input#name(type="text", name="name")
 			p
-				label(for="tema") Your theme:
-				input(type="text", name="tema")
-
-				
+				input#name(type="hidden", name="tema")
 			button(type="submit") Enter
