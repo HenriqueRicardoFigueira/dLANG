@@ -1,12 +1,14 @@
 doctype html
 html
 	head
-		title #{id} - WebChat
+		title #{id} - Who I' am
 		style.
 			textarea, input { width: 100%; }
 			textarea { resize: vertical; }
 	body
-		h1 Room '#{id}'
+		h1 Room: '#{id}'
+		h2 Tema: '#{tema}'
+		h2 Players: '#{members}'
         
 		textarea#history(rows=20, readonly=true)
 			- foreach (ln; messages)
