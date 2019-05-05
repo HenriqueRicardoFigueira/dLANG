@@ -16,6 +16,35 @@ class WebChats
         res.render!("newplayer.dt");
     }
 
+
+
+	void getWS(string room, string name, scope WebSocket socket)
+	{
+		writeln("getWS");
+		auto r = getOrCreateRoom(room);
+
+		// watch for new messages in the history and send them
+		// to the client
+		runTask({
+			// keep track of the last message that got already sent to the client
+			// we assume that we sent all message so far
+			auto next_message = r.messages.length;
+
+			// send new messages as they come in
+			while (socket.connected) {
+				while (next_message < r.messages.length)
+					socket.send(r.messages[next_message++]);
+				r.waitForMessage(next_message);
+			}
+		});
+
+		// receive messages from the client and add it to the history
+		while (socket.waitForData) {
+			auto message = socket.receiveText();
+			if (message.length) r.addMessage(name, message);
+		}}
+
+
     void getRoom(string id, string name, string tema)
     {   
         string[] members;
@@ -40,7 +69,7 @@ class WebChats
         m_rooms[id].addMembers(pname);
         m_rooms[id].tema = tema;
         
-    };
+    }
    
     void postRoom(string id, string name, string message)
 	{
@@ -63,10 +92,11 @@ class WebChats
 			return m_rooms[id];  
 		}
 	}
+
 }
 class palavrasChaves{
 	string[] persona ;
-	string[] comandos = ["HELP","TALKTOME","QUIT","/help","/quit"];
+	string[] comandos = ["HELP","TALKTOME","QUIT","/help","/quit","You are"];
 
 	void setPersona(string palavra){
 		//inicializa a classe setando a persona
@@ -89,13 +119,27 @@ class palavrasChaves{
 	}
 	
 
+	void comandoQuit(){
+
+		render!("index.dt");
+	}
+
+	string comandoHelp(){
+		string a =  "HELP | /help | QUIT | /quit";
+		return a;
+	}
+}
+	
+
 final class Player{
+	bool token;
     string name;
     string room;
     int score;
     bool master;
 
     this(string name, string room, int score, bool master){
+		this.token = false;
         this.name = name;
         this.room = room;
         this.score = score;
@@ -125,10 +169,12 @@ final class Room {
 		
 			if (message == "/quit"){
 				palavrasChave.comandoQuit();
+//				m_rooms[id].members[]
 				messages ~=  name ~ "Saiu >>>| .|<<<";
 			}
 			else if(message == "QUIT"){
 				palavrasChave.comandoQuit();
+				
 				messages ~=  name ~ "Saiu >>>| .|<<<";
 			}
 			else if(message == "HELP"){
@@ -137,7 +183,9 @@ final class Room {
 			}
 			messages ~= name ~ ": " ~ "";	
 		}else {
+
 			messages ~= name ~ ": " ~ message;
+			
 		}
 		messageEvent.emit();
 	}
