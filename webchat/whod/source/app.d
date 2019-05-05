@@ -1,8 +1,9 @@
 import vibe.d;
-
+import std.stdio;
 class WebChats
 {
     private Room[string] m_rooms;
+	string persona;
 
     void get(HTTPServerResponse res)
     {
@@ -28,7 +29,9 @@ class WebChats
             
             render!("room.dt", id, name, messages, members,tema);
         }
+		writeln("get");
     }
+
 
     void managementRoom(string id, string name, string tema){
         
@@ -41,18 +44,50 @@ class WebChats
    
     void postRoom(string id, string name, string message)
 	{
+		writeln("postRoom");
 		if (message.length)
 			getOrCreateRoom(id).addMessage(name, message);
         string tema = m_rooms[id].tema;
 		redirect("room?id="~id.urlEncode~"&name="~name.urlEncode~"&tema="~tema.urlEncode);
 	}
-
     private Room getOrCreateRoom(string id)
 	{
-		if (auto pr = id in m_rooms) return *pr;
-		return m_rooms[id] = new Room;
+		writeln("getorRoom");
+		if (auto pr = id in m_rooms){
+			
+			return *pr;
+		}
+		else{
+			m_rooms[id] = new Room;
+			//m_rooms[id].palavrasChave.setPersona(this.persona);
+			return m_rooms[id];  
+		}
 	}
 }
+class palavrasChaves{
+	string[] persona ;
+	string[] comandos = ["HELP","TALKTOME","QUIT","/help","/quit"];
+
+	void setPersona(string palavra){
+		//inicializa a classe setando a persona
+		this.persona[0] = palavra;
+	}
+
+
+
+	bool checaComandos(string palavra){
+		//função que checa se é uma palavra reservada
+		int tam = comandos.length;
+		int i = 0;
+		for (i = 0; i < tam;i++){
+			writeln("CHECANDO");
+			if (this.comandos[i] == palavra){
+				return 1;
+			}
+		}
+		return 0;
+	}
+	
 
 final class Player{
     string name;
@@ -68,15 +103,50 @@ final class Player{
     }
 }
 
+
 final class Room {
 	string[] messages;
-    string tema;
+	LocalManualEvent messageEvent;
+	string tema;
     string[] members;
-    
+	palavrasChaves palavrasChave = new palavrasChaves;
+	//palavrasChave.setComandos();
+	this()
+	{
+		messageEvent = createManualEvent();	
+
+	}
 
 	void addMessage(string name, string message)
 	{
-		messages ~= name ~ ": " ~ message;
+		bool reservada = palavrasChave.checaComandos(message);
+		
+		if (reservada == 1){
+		
+			if (message == "/quit"){
+				palavrasChave.comandoQuit();
+				messages ~=  name ~ "Saiu >>>| .|<<<";
+			}
+			else if(message == "QUIT"){
+				palavrasChave.comandoQuit();
+				messages ~=  name ~ "Saiu >>>| .|<<<";
+			}
+			else if(message == "HELP"){
+				string aux = palavrasChave.comandoHelp();
+				messages ~= name ~ aux ;
+			}
+			messages ~= name ~ ": " ~ "";	
+		}else {
+			messages ~= name ~ ": " ~ message;
+		}
+		messageEvent.emit();
+	}
+
+	void waitForMessage(size_t next_message)
+	{
+		while (messages.length <= next_message)
+			
+			messageEvent.wait();
 	}
 
     void addMembers(string name)
@@ -92,11 +162,21 @@ final class Room {
         }
         return false;
     }
+	
+	void comandoQuit(){
+		render!("index.dt");
+	}
+
+	string comandoHelp(){
+		string a =  "HELP | /help | QUIT | /quit";
+		return a;
+	}
 }
 
 
 void main()
 {
+	
     auto router = new URLRouter;
     router.registerWebInterface(new WebChats);
     //router.get("*", serveStaticFiles("views/");
