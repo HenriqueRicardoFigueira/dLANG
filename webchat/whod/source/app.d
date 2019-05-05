@@ -51,8 +51,12 @@ class WebChats
 	{
 		string[] members;
 		auto messages = getOrCreateRoom(id).messages;
-
+		
 		bool x = m_rooms[id].checkPlayer(name);
+
+		int c = 0;
+
+
 
 		if (tema == null)
 			tema = m_rooms[id].tema;
@@ -67,6 +71,7 @@ class WebChats
 		{
 			members = m_rooms[id].members;
 			render!("room.dt", id, name, messages, members, tema);
+
 		}
 	}
 
@@ -81,7 +86,7 @@ class WebChats
 
 	void postRoom(string id, string name, string message)
 	{
-		writeln("postRoom");
+		//writeln("postRoom");
 		if (message.length)
 			getOrCreateRoom(id).addMessage(name, message);
 		string tema = m_rooms[id].tema;
@@ -90,7 +95,7 @@ class WebChats
 
 	private Room getOrCreateRoom(string id)
 	{
-		writeln("getorRoom");
+		//writeln("getorRoom");
 		if (auto pr = id in m_rooms)
 		{
 
@@ -99,6 +104,7 @@ class WebChats
 		else
 		{
 			m_rooms[id] = new Room;
+			m_rooms[id].setId(id);
 			//m_rooms[id].palavrasChave.setPersona(this.persona);
 			return m_rooms[id];
 		}
@@ -124,7 +130,7 @@ class palavrasChaves
 		int i = 0;
 		for (i = 0; i < tam; i++)
 		{
-			writeln("CHECANDO");
+			//writeln("CHECANDO");
 			if (this.comandos[i] == palavra)
 			{
 				return 1;
@@ -152,6 +158,7 @@ final class Player
 	string room;
 	int score;
 	bool master;
+	bool token;
 
 	this(string name, string room)
 	{
@@ -159,6 +166,9 @@ final class Player
 		this.room = room;
 	}
 
+	void setToken(bool tok){
+		this.token = tok;
+	}
 	void setMaster(bool xxx)
 	{
 		this.master = xxx;
@@ -172,6 +182,7 @@ final class Player
 
 final class Room
 {
+	string id;
 	string[] messages;
 	LocalManualEvent messageEvent;
 	string tema;
@@ -179,44 +190,95 @@ final class Room
 	palavrasChaves palavrasChave = new palavrasChaves;
 	Player[] m_player;
 	//palavrasChave.setComandos();
+	int contador = 0;
 	this()
-	{
+	{	
+	
 		messageEvent = createManualEvent();
 
+	}
+	void setId(string id){
+		this.id = id;
 	}
 
 	void addMessage(string name, string message)
 	{
 		bool reservada = palavrasChave.checaComandos(message);
-
-		if (reservada == 1)
-		{
-
-			if (message == "/quit")
-			{
-				palavrasChave.comandoQuit();
-				//				m_rooms[id].members[]
-				messages ~= name ~ "Saiu >>>| .|<<<";
+		string serverlog1,serverlog2,serverlog3;
+		int c = 0;
+		bool ismaster = false;
+		Player[] lista = m_player;
+		bool winner = false;
+		
+		foreach(Player palavradavez ; lista){				
+			if (palavradavez.name == name){	
+				
+				//m_player[palavradavez].setToken(false);				
+					if (lista[c].master == true){						
+						ismaster = true;
+						break;
+					}
+					break;
+				}
+				c++;
 			}
-			else if (message == "QUIT")
-			{
-				palavrasChave.comandoQuit();
+		Player player = m_player[c];
+		if ((winner == false) && (player.token == true) &&(message.length > 0)){	
+			player.setToken(false);
+			if (contador ==( m_player.length)-1){
+				writeln("token zerado");
+				m_player[0].setToken(true);
 
-				messages ~= name ~ "Saiu >>>| .|<<<";
+				serverlog1 = " token zerado. Sua vez mestre!"; 
+				contador = 0;
+			}else if(ismaster){
+				//m_player[0].setToken(true);
+				writeln("token pro player");
+				contador ++;
+				serverlog2 =  " Sua vez!";
+				m_player[contador].setToken(true);
+			}else if(!ismaster){
+				writeln("token pro mestre");
+				m_player[0].setToken(true);
+				serverlog3 = " Sua vez mestre!"; 
+				
 			}
-			else if (message == "HELP")
-			{
-				string aux = palavrasChave.comandoHelp();
-				messages ~= name ~ aux;
+			
+			if (ismaster == true){
+					if ((message == "SIM" ) || (message =="sim")){// COMANDOS DO MESTRE
+						messages ~= name ~  ": " ~"Sim";
+						
+					}
+					else if((message == "NAO") || (message =="nao")){
+						messages ~= name ~  ": " ~"Não";
+					}
+		
+
 			}
-			messages ~= name ~ ": " ~ "";
+			else if ((reservada == 1)){	
+
+
+
+				 // COMANDOS DOS PLAYERS
+					if ((message == "/quit") || (message == "QUIT")){
+						palavrasChave.comandoQuit();
+							//				m_rooms[id].members[]
+						messages ~= name ~ "Saiu >>>| .|<<<";
+					}
+					else if (message == "HELP"){
+						string aux = palavrasChave.comandoHelp();
+						messages ~= name ~ ": " ~ aux;
+					}
+				
+			}else {
+				
+				messages ~= name ~ ": " ~ message;
+
+
+			}	
+	
 		}
-		else
-		{
 
-			messages ~= name ~ ": " ~ message;
-
-		}
 		messageEvent.emit();
 	}
 
@@ -231,6 +293,7 @@ final class Room
     {
         if(m_player.length == 0)
             p1.setMaster(true);
+			p1.setToken(true);
         m_player ~= p1;
         members ~= p1.name;
         writeln(p1.master);
