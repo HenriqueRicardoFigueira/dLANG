@@ -13,6 +13,10 @@ html
 			p
 				label(for="name") Your name:
 				input#name(type="text", name="name")
+			p
+				label(for="persona") Your persona:
+				input#name(type="text", persona="persona")
+
 
 				
 			button(type="submit") Enter

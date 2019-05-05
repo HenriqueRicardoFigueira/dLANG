@@ -1,16 +1,19 @@
 import vibe.d;
-
+import std.stdio;
 class WebChats
 {
     private Room[string] m_rooms;
+	string persona;
 
     void get(HTTPServerRequest req, HTTPServerResponse res)
     {
         res.render!("index.dt");
+		writeln("get");
     }
 
-    void getRoom(string id, string name, string persona)
-    {
+    void getRoom(string id, string name)
+    {	
+		writeln("getRoom");
          
 		auto messages = getOrCreateRoom(id).messages;
 		
@@ -19,6 +22,7 @@ class WebChats
 
     void postRoom(string id, string name, string message)
 	{
+		writeln("postRoom");
 		if (message.length)
 			getOrCreateRoom(id).addMessage(name, message);
 		redirect("room?id="~id.urlEncode~"&name="~name.urlEncode);
@@ -27,6 +31,7 @@ class WebChats
 	
 	void getWS(string room, string name, scope WebSocket socket)
 	{
+		writeln("getWS");
 		auto r = getOrCreateRoom(room);
 
 		// watch for new messages in the history and send them
@@ -52,34 +57,35 @@ class WebChats
 	}
     private Room getOrCreateRoom(string id)
 	{
+		writeln("getorRoom");
 		if (auto pr = id in m_rooms){
 			
 			return *pr;
 		}
 		else{
 			m_rooms[id] = new Room;
-			m_rooms[id].palavrasChave.setPersona(persona); 
+			//m_rooms[id].palavrasChave.setPersona(this.persona);
+			return m_rooms[id];  
 		}
 	}
 }
 class palavrasChaves{
 	string[] persona ;
-	string[] comandos ;
+	string[] comandos = ["HELP","TALKTOME","QUIT","/help","/quit"];
 
 	void setPersona(string palavra){
 		//inicializa a classe setando a persona
 		this.persona[0] = palavra;
 	}
 
-	void setComandos(){
-		this.comandos = ["HELP","TALKTOME","QUIT","/help","/quit"];
-	}
 
-	void checaComandos(string palavra){
+
+	bool checaComandos(string palavra){
 		//função que checa se é uma palavra reservada
-		int tam = (this.comandos.length);
+		int tam = comandos.length;
 		int i = 0;
-		for (i == 0; i < tam;i++){
+		for (i = 0; i < tam;i++){
+			writeln("CHECANDO");
 			if (this.comandos[i] == palavra){
 				return 1;
 			}
@@ -91,16 +97,22 @@ class palavrasChaves{
 	void comandoQuit(){
 		render!("index.dt");
 	}
+
+	string comandoHelp(){
+		string a =  "HELP | /help | QUIT | /quit";
+		return a;
+	}
 	
 }
 final class Room {
 	string[] messages;
 	LocalManualEvent messageEvent;
 	palavrasChaves palavrasChave = new palavrasChaves;
-
+	//palavrasChave.setComandos();
 	this()
 	{
 		messageEvent = createManualEvent();
+		
 
 	}
 
@@ -109,7 +121,7 @@ final class Room {
 		bool reservada = palavrasChave.checaComandos(message);
 		
 		if (reservada == 1){
-			/*
+		
 			if (message == "/quit"){
 				palavrasChave.comandoQuit();
 				messages ~=  name ~ "Saiu >>>| .|<<<";
@@ -119,9 +131,9 @@ final class Room {
 				messages ~=  name ~ "Saiu >>>| .|<<<";
 			}
 			else if(message == "HELP"){
-				palavrasChave.comandoHelp();
-				
-			}*/
+				string aux = palavrasChave.comandoHelp();
+				messages ~= name ~ aux ;
+			}
 			messages ~= name ~ ": " ~ "";	
 		}else {
 			messages ~= name ~ ": " ~ message;
