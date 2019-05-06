@@ -55,6 +55,7 @@ class WebChats
 		
 		if(answer != null)
 			m_rooms[id].setAnswer = answer;
+			
 		
 		if (tema == null)
 			tema = m_rooms[id].tema;
@@ -101,6 +102,7 @@ class WebChats
 		{
 			m_rooms[id] = new Room;
 			m_rooms[id].setId(id);
+			
 			return m_rooms[id];
 		}
 	}
@@ -197,6 +199,7 @@ final class Room
 	this()
 	{	
 		messageEvent = createManualEvent();
+		
 	}
 
 	void setId(string id)
@@ -207,7 +210,7 @@ final class Room
 	void setAnswer(string answer)
 	{
 		this.answer = answer;
-
+		
 	}
 
 	string getAnswer(){
@@ -216,7 +219,7 @@ final class Room
 	
 	void addMessage(string name, string message, string answer)
 	{
-
+		
 		bool reservada = palavrasChave.checaComandos(message);
 		string serverlog1,serverlog2,serverlog3;
 		int c = 0;
@@ -229,13 +232,13 @@ final class Room
 			if ((message == "/quit") || (message == "QUIT")){
 				palavrasChave.comandoQuit();
 				//				m_rooms[id].members[]
-				messages ~= name ~ "Saiu >>>| .|<<<";
+				messages ~= name ~ "	Saiu >>>| .|<<<";
 				messageEvent.emit();
 				return;
 			}
 			else if (message == "HELP"){
 				string aux = palavrasChave.comandoHelp();
-				messages ~= name ~ ": " ~ aux;
+				messages ~= name ~ ": 	" ~ aux;
 				messageEvent.emit();
 				return;
 			}
@@ -254,8 +257,14 @@ final class Room
 				}
 				c++;
 			}
-		Player player = m_player[c];
 		
+		Player player = m_player[c];
+		if(player.token == false){
+			messages ~= name ~ "		Espere a sua vez. " ;
+			messageEvent.emit();
+			messages ~= name ~ " 		É vez do player -> " ~ m_player[contador].name;
+			messageEvent.emit();
+		}
 		if((message == answer) && (!ismaster)){
 			messages ~= name ~ " >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)" ;
 			player.setScore();
@@ -269,7 +278,7 @@ final class Room
 			setAnswer(message);
 			messages ~= name ~ " - > MUDOU A PERSONA DA PARTIDA < - " ;
 			messageEvent.emit();
-			messages ~= name ~ " Player da vez, faça uma pergunta. " ;
+			messages ~= name ~ " 	Player da vez, faça uma pergunta. " ;
 			messageEvent.emit();
 			return; 
 		}
@@ -308,6 +317,8 @@ final class Room
 					else if((message == "NAO") || (message =="nao")){
 						messages ~= name ~  ": " ~"Não";
 					}else if(message == "NEWGAME"){
+						messages ~= name ~ "  > insira o nome da nova persona <  " ;
+						messageEvent.emit();
 						newpersona = "80028922";
 						return;
 					}
@@ -329,17 +340,17 @@ final class Room
 			}
 			if(vari != 0){
 				if (vari == 1){
-					serverlog1 = " Sua vez mestre!"; 
+					serverlog1 = "		Sua vez mestre!"; 
 					
 					messages ~= serverlog1;
 					
 				}else if (vari == 2){
-					serverlog2 = " Sua vez player ->";
+					serverlog2 = "		Sua vez player ->";
 					
 					messages ~= serverlog2 ~ m_player[contador].name;
 
 				}else if (vari == 3){
-					serverlog3 = " Sua vez mestre!"; 
+					serverlog3 = "		Sua vez mestre!"; 
 				}
 				messageEvent.emit();
 			}
@@ -370,6 +381,8 @@ final class Room
 		{
             p1.setMaster(true);
 			p1.setToken(true);
+			
+
 		}
 		
 		m_player ~= p1;

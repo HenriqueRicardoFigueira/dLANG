@@ -1,0 +1,17 @@
+Sala:1
+Tema:2
+Player:2
+Score:0
+Mestre:true
+
+
+Player:3232
+Score:10
+Mestre:false
+
+
+-----------------------------------------------------------------------------------------------
+Log Messages
+2: Sim
+ Sua vez player ->3232
+3232 >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)
