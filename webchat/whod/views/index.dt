@@ -22,7 +22,7 @@ html
 				input(type="text", name="tema")
 			p	
 				label(for="persona") Your persona:
-				input#name(type="text", persona="persona")
+				input#name(type="text", name="answer")
 
 
 				

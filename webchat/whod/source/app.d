@@ -4,12 +4,10 @@ import std.stdio;
 class WebChats
 {
 	private Room[string] m_rooms;
-	string persona;
 
 	void get(HTTPServerResponse res)
 	{
 		res.render!("index.dt");
-
 	}
 
 	void getNewplayer(HTTPServerResponse res)
@@ -47,65 +45,59 @@ class WebChats
 		}
 	}
 
-	void getRoom(string id, string name, string tema)
+	void getRoom(string id, string name, string tema, string answer)
 	{
 		string[] members;
 		auto messages = getOrCreateRoom(id).messages;
-		
-		bool x = m_rooms[id].checkPlayer(name);
-
+		bool x =  m_rooms[id].checkPlayer(name);
 		int c = 0;
-
-
-
+		
 		if (tema == null)
 			tema = m_rooms[id].tema;
 
 		if (x == false)
 		{
-			managementRoom(id, name, tema);
+			managementRoom(id, name, tema, answer);
 			members = m_rooms[id].members;
-			render!("room.dt", id, name, messages, members, tema);
+			render!("room.dt", id, name, messages, members, tema, answer);
 		}
 		else
 		{
 			members = m_rooms[id].members;
-			render!("room.dt", id, name, messages, members, tema);
+			render!("room.dt", id, name, messages, members, tema, answer);
 
 		}
 	}
 
-	void managementRoom(string id, string name, string tema)
+	void managementRoom(string id, string name, string tema, string answer)
 	{
-
 		auto px = new Player(name, id);
 		m_rooms[id].addMembers(px);
 		m_rooms[id].tema = tema;
-
+		m_rooms[id].setAnswer = answer;
+		writeln(answer);
 	}
 
-	void postRoom(string id, string name, string message)
-	{
-		//writeln("postRoom");
+	void postRoom(string id, string name, string message, string answer)
+	{	
+		string tema = m_rooms[id].tema;
 		if (message.length)
 			getOrCreateRoom(id).addMessage(name, message);
-		string tema = m_rooms[id].tema;
-		redirect("room?id=" ~ id.urlEncode ~ "&name=" ~ name.urlEncode ~ "&tema=" ~ tema.urlEncode);
+		redirect("room?id=" ~ id.urlEncode ~ "&name=" ~ name.urlEncode ~ "&tema=" ~ tema.urlEncode ~ "&answer=" ~ answer.urlEncode);
 	}
 
 	private Room getOrCreateRoom(string id)
 	{
-		//writeln("getorRoom");
+		
 		if (auto pr = id in m_rooms)
 		{
-
 			return *pr;
-		}
-		else
+		
+		}else
+		
 		{
 			m_rooms[id] = new Room;
 			m_rooms[id].setId(id);
-			//m_rooms[id].palavrasChave.setPersona(this.persona);
 			return m_rooms[id];
 		}
 	}
@@ -114,13 +106,13 @@ class WebChats
 
 class palavrasChaves
 {
-	string[] persona;
+	string persona;
 	string[] comandos = ["HELP", "TALKTOME", "QUIT", "/help", "/quit", "You are"];
 
 	void setPersona(string palavra)
 	{
 		//inicializa a classe setando a persona
-		this.persona[0] = palavra;
+		this.persona = palavra;
 	}
 
 	bool checaComandos(string palavra)
@@ -130,7 +122,6 @@ class palavrasChaves
 		int i = 0;
 		for (i = 0; i < tam; i++)
 		{
-			//writeln("CHECANDO");
 			if (this.comandos[i] == palavra)
 			{
 				return 1;
@@ -141,7 +132,6 @@ class palavrasChaves
 
 	void comandoQuit()
 	{
-
 		render!("index.dt");
 	}
 
@@ -166,9 +156,11 @@ final class Player
 		this.room = room;
 	}
 
-	void setToken(bool tok){
+	void setToken(bool tok)
+	{
 		this.token = tok;
 	}
+
 	void setMaster(bool xxx)
 	{
 		this.master = xxx;
@@ -189,16 +181,23 @@ final class Room
 	string[] members;
 	palavrasChaves palavrasChave = new palavrasChaves;
 	Player[] m_player;
-	//palavrasChave.setComandos();
+	string answer;
+
 	int contador = 0;
+	
 	this()
 	{	
-	
 		messageEvent = createManualEvent();
-
 	}
-	void setId(string id){
+
+	void setId(string id)
+	{
 		this.id = id;
+	}
+
+	void setAnswer(string answer)
+	{
+		this.answer = answer;
 	}
 
 	void addMessage(string name, string message)
@@ -289,12 +288,15 @@ final class Room
 			messageEvent.wait();
 	}
 
-	 void addMembers(Player p1)
+	void addMembers(Player p1)
     {
         if(m_player.length == 0)
+		{
             p1.setMaster(true);
 			p1.setToken(true);
-        m_player ~= p1;
+		}
+		
+		m_player ~= p1;
         members ~= p1.name;
         writeln(p1.master);
     }
@@ -330,8 +332,8 @@ void main()
 	//router.get("*", serveStaticFiles("views/");
 
 	auto settings = new HTTPServerSettings;
-	// Needed for SessionVar usage.
-	settings.sessionStore = new MemorySessionStore;
+	
+	
 	settings.port = 8080;
 	listenHTTP(settings, router);
 	runApplication();
