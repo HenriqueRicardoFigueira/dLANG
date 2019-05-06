@@ -15,7 +15,8 @@ class WebChats
 		res.render!("newplayer.dt");
 	}
 
-	void getNewroom(HTTPServerResponse res){
+	void getNewroom(HTTPServerResponse res)
+	{
 		res.render!("newroom.dt");
 	}
 /*
@@ -69,7 +70,6 @@ class WebChats
 		{	
 			members = m_rooms[id].members;
 			render!("room.dt", id, name, messages, members, tema, answer);
-
 		}
 	}
 
@@ -78,7 +78,6 @@ class WebChats
 		auto px = new Player(name, id);
 		m_rooms[id].addMembers(px);
 		m_rooms[id].tema = tema;
-		
 	}
 
 	void postRoom(string id, string name, string message, string answer)
@@ -96,8 +95,7 @@ class WebChats
 		{
 			return *pr;
 		
-		}else
-		
+		} else
 		{
 			m_rooms[id] = new Room;
 			m_rooms[id].setId(id);
@@ -141,12 +139,18 @@ class palavrasChaves
 
 	string comandoHelp()
 	{
-		string a = "   > Para sair > QUIT | /quit \n				> Para saber as regras >  RULES | /rules \n";
+		string a = "> Para sair > QUIT | /quit \n				
+					> Para saber as regras >  RULES | /rules \n";
 		return a;
 	}
 	string comandoRules()
 	{
-		string a = "   > A regras são simples: \n				> Um fala de cada vez \n				> Sempre que um player pergunta, é vez do mestre responder \n				> O mestre só pode responder 'sim' ou 'nao' \n				> Ganha quem acertar primeiro o personagem que o mestre é \n				> O mestre que comanda a sala e avisa quem ganha com o comando (GANHADOR player)";				
+		string a = "> A regras são simples: \n				
+					> Um fala de cada vez \n				
+					> Sempre que um player pergunta, é vez do mestre responder \n				
+					> O mestre só pode responder 'sim' ou 'nao' \n				
+					> Ganha quem acertar primeiro o personagem que o mestre é \n				
+					> O mestre que comanda a sala e avisa quem ganha com o comando (GANHADOR player)";				
 		return a;
 	}
 }
@@ -207,16 +211,15 @@ final class Room
 	void setAnswer(string answer)
 	{
 		this.answer = answer;
-
 	}
 
-	string getAnswer(){
+	string getAnswer()
+	{
 		return answer;
 	}
 	
 	void addMessage(string name, string message, string answer)
 	{
-
 		bool reservada = palavrasChave.checaComandos(message);
 		string serverlog1,serverlog2,serverlog3;
 		int c = 0;
@@ -224,16 +227,19 @@ final class Room
 		Player[] lista = m_player;
 		bool winner = false;
 
-		if ((reservada == 1)){	
+		if ((reservada == 1))
+		{	
 		 // COMANDOS DOS PLAYERS
-			if ((message == "/quit") || (message == "QUIT")){
+			if ((message == "/quit") || (message == "QUIT"))
+			{
 				palavrasChave.comandoQuit();
 				//				m_rooms[id].members[]
 				messages ~= name ~ "Saiu >>>| .|<<<";
 				messageEvent.emit();
 				return;
 			}
-			else if (message == "HELP"){
+			else if (message == "HELP")
+			{
 				string aux = palavrasChave.comandoHelp();
 				messages ~= name ~ ": " ~ aux;
 				messageEvent.emit();
@@ -241,22 +247,23 @@ final class Room
 			}
 		}	
 		
-
 		foreach(Player palavradavez ; lista){				
-			if (palavradavez.name == name){	
-				
-				//m_player[palavradavez].setToken(false);				
-					if (lista[c].master == true){						
-						ismaster = true;
-						break;
-					}
+			if (palavradavez.name == name)
+			{					
+				if (lista[c].master == true)
+				{						
+					ismaster = true;
 					break;
 				}
-				c++;
+				break;
 			}
+				c++;
+		}
+		
 		Player player = m_player[c];
 		
-		if((message == answer) && (!ismaster)){
+		if((message == answer) && (!ismaster))
+		{
 			messages ~= name ~ " >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)" ;
 			player.setScore();
 			saveLog(messages);
@@ -264,7 +271,8 @@ final class Room
 			return;
 		}
 		
-		if((newpersona.length > 0) && (ismaster)){
+		if((newpersona.length > 0) && (ismaster))
+		{
 			newpersona = null;
 			setAnswer(message);
 			messages ~= name ~ " - > MUDOU A PERSONA DA PARTIDA < - " ;
@@ -273,83 +281,87 @@ final class Room
 			messageEvent.emit();
 			return; 
 		}
-		if ((winner == false) && (player.token == true) &&(message.length > 1)){	
+		
+		if ((winner == false) && (player.token == true) &&(message.length > 1))
+		{	
 			player.setToken(false);
-
 			int vari = 0;
-			if ((contador ==( m_player.length)-1)){
+			if ((contador ==( m_player.length)-1))
+			{
 				writeln("token zerado");
 				contador = 0;
 				m_player[0].setToken(true);				
 				vari = 1;
-
-
-			}else if(ismaster){
-				//m_player[0].setToken(true);
-				
+			} else if (ismaster)
+			{
 				writeln("token pro player");
 				contador ++;
 				m_player[contador].setToken(true);
 				vari = 2;
 
-			}else if(!ismaster){
+			} else if (!ismaster)
+			{
 				writeln("token pro mestre");
 				m_player[0].setToken(true);
 
 				vari = 3;
-				
 			}
 			
-			if (ismaster == true){
-					if ((message == "SIM" ) || (message =="sim")){// COMANDOS DO MESTRE
+			if (ismaster == true)
+			{
+					if ((message == "SIM" ) || (message =="sim"))
+					{// COMANDOS DO MESTRE
 						messages ~= name ~  ": " ~"Sim";
-						
 					}
-					else if((message == "NAO") || (message =="nao")){
+					else if((message == "NAO") || (message =="nao"))
+					{
 						messages ~= name ~  ": " ~"Não";
-					}else if(message == "NEWGAME"){
+					} 
+					else if(message == "NEWGAME")
+					{
 						newpersona = "80028922";
 						return;
 					}
-		
-
 			}
 
-
-			else {
-				
+			else 
+			{	
 				messages ~= name ~ ": " ~ message;
-
-
 			}	
-			
-
-			if(answer == message){
+		
+			if(answer == message)
+			{
 				messages ~= name ~ " >> GANHOU << " ;
 			}
-			if(vari != 0){
-				if (vari == 1){
+
+			if(vari != 0)
+			{
+				if (vari == 1)
+				{
 					serverlog1 = " Sua vez mestre!"; 
-					
 					messages ~= serverlog1;
 					
-				}else if (vari == 2){
+				} 
+				else if (vari == 2)
+				{
 					serverlog2 = " Sua vez player ->";
-					
 					messages ~= serverlog2 ~ m_player[contador].name;
-
-				}else if (vari == 3){
+				}
+				else if (vari == 3)
+				{
 					serverlog3 = " Sua vez mestre!"; 
 				}
 				messageEvent.emit();
 			}
 	
 		}
-		if ((message == "HELP")||(message == "/help")){
+		if ((message == "HELP")||(message == "/help"))
+		{
 			string aux = palavrasChave.comandoHelp();
 			messages ~= name ~ ": " ~ aux;
-			}
-		else if(message == "RULES"){
+		}
+		else if(message == "RULES")
+		{
 			string aux = palavrasChave.comandoRules();
 			messages ~= name ~ ": " ~ aux;
 		}
@@ -371,7 +383,6 @@ final class Room
             p1.setMaster(true);
 			p1.setToken(true);
 		}
-		
 		m_player ~= p1;
         members ~= p1.name;
         writeln(p1.master);
