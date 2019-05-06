@@ -18,7 +18,7 @@ class WebChats
 	void getNewroom(HTTPServerResponse res){
 		res.render!("newroom.dt");
 	}
-/*
+	/*
 	void getWS(string room, string name, scope WebSocket socket)
 	{
 		writeln("getWS");
@@ -44,8 +44,8 @@ class WebChats
 			if (message.length)
 				r.addMessage(name, message);
 		}
-	}
-*/
+	}*/
+
 	void getRoom(string id, string name, string tema, string answer)
 	{
 		string[] members;
@@ -209,7 +209,21 @@ final class Room
 		this.answer = answer;
 
 	}
-
+/*
+	void recriarListaPlayer(int i){
+		int cont  = 0;
+		int cont2 = 0;
+		Player[] newplayerlist;
+		while (cont < m_player.length){
+			if(cont != i){
+				newplayerlist[cont] = m_player[cont2];
+				cont++;
+			}
+			cont2++;
+		}
+		m_player = newplayerlist;
+	}
+*/
 	string getAnswer(){
 		return answer;
 	}
@@ -224,23 +238,6 @@ final class Room
 		Player[] lista = m_player;
 		bool winner = false;
 
-		if ((reservada == 1)){	
-		 // COMANDOS DOS PLAYERS
-			if ((message == "/quit") || (message == "QUIT")){
-				palavrasChave.comandoQuit();
-				//				m_rooms[id].members[]
-				messages ~= name ~ "Saiu >>>| .|<<<";
-				messageEvent.emit();
-				return;
-			}
-			else if (message == "HELP"){
-				string aux = palavrasChave.comandoHelp();
-				messages ~= name ~ ": " ~ aux;
-				messageEvent.emit();
-				return;
-			}
-		}	
-		
 
 		foreach(Player palavradavez ; lista){				
 			if (palavradavez.name == name){	
@@ -255,6 +252,27 @@ final class Room
 				c++;
 			}
 		Player player = m_player[c];
+
+
+		if ((reservada == 1)){	
+		 // COMANDOS DOS PLAYERS
+			if ((message == "/quit") || (message == "QUIT")){
+				palavrasChave.comandoQuit();
+				//				m_rooms[id].members[]
+				messages ~= name ~ "	Saiu >>>| .|<<<";
+				//recriarListaPlayer(c);
+				messageEvent.emit();
+				return;
+			}
+			else if (message == "HELP"){
+				string aux = palavrasChave.comandoHelp();
+				messages ~= name ~ ": " ~ aux;
+				messageEvent.emit();
+				return;
+			}
+		}	
+		
+
 		
 		if((message == answer) && (!ismaster)){
 			messages ~= name ~ " >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)" ;
@@ -308,6 +326,8 @@ final class Room
 					else if((message == "NAO") || (message =="nao")){
 						messages ~= name ~  ": " ~"Não";
 					}else if(message == "NEWGAME"){
+						messages ~= name ~ " insira a nova persona -> " ;
+						messageEvent.emit();
 						newpersona = "80028922";
 						return;
 					}
