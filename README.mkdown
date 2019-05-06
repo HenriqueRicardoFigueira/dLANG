@@ -15,9 +15,9 @@ Alunos:
 
 ## Regras
   
-> Um fala de cada vez, uma vez enviada a mensagem o player fica mutado até ser a vez dele   
-> Sempre que um player pergunta, é vez do mestre responder    
-> O mestre só pode responder 'sim' ou 'nao'    
-> Ganha quem falar primeiro o personagem que o mestre é    
+1. Um fala de cada vez, uma vez enviada a mensagem o player fica mutado até ser a vez dele   
+2. Sempre que um player pergunta, é vez do mestre responder    
+3. O mestre só pode responder 'sim' ou 'nao'    
+4. Ganha quem falar primeiro o personagem que o mestre é    
 				
 		
