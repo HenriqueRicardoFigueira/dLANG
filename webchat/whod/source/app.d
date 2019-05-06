@@ -48,45 +48,47 @@ class WebChats
 	void getRoom(string id, string name, string tema, string answer)
 	{
 		string[] members;
-		auto messages = getOrCreateRoom(id,answer).messages;
+		auto messages = getOrCreateRoom(id).messages;
 		bool x =  m_rooms[id].checkPlayer(name);
 		int c = 0;
+		
+		if(answer != null)
+			m_rooms[id].setAnswer = answer;
 		
 		if (tema == null)
 			tema = m_rooms[id].tema;
 
 		if (x == false)
 		{
-			managementRoom(id, name, tema, answer);
+			managementRoom(id, name, tema);
 			members = m_rooms[id].members;
 			render!("room.dt", id, name, messages, members, tema, answer);
 		}
 		else
-		{
+		{	
 			members = m_rooms[id].members;
 			render!("room.dt", id, name, messages, members, tema, answer);
 
 		}
 	}
 
-	void managementRoom(string id, string name, string tema, string answer)
+	void managementRoom(string id, string name, string tema)
 	{
 		auto px = new Player(name, id);
 		m_rooms[id].addMembers(px);
 		m_rooms[id].tema = tema;
-		m_rooms[id].setAnswer = answer;
-		writeln(answer);
+		
 	}
 
 	void postRoom(string id, string name, string message, string answer)
 	{	
 		string tema = m_rooms[id].tema;
 		if (message.length)
-			getOrCreateRoom(id,answer).addMessage(name, message,answer);
+			getOrCreateRoom(id).addMessage(name, message, m_rooms[id].answer);
 		redirect("room?id=" ~ id.urlEncode ~ "&name=" ~ name.urlEncode ~ "&tema=" ~ tema.urlEncode ~ "&answer=" ~ answer.urlEncode);
 	}
 
-	private Room getOrCreateRoom(string id,string answer)
+	private Room getOrCreateRoom(string id)
 	{
 		
 		if (auto pr = id in m_rooms)
@@ -96,9 +98,7 @@ class WebChats
 		}else
 		
 		{
-			writeln(answer);
 			m_rooms[id] = new Room;
-			m_rooms[id].setAnswer(answer);
 			m_rooms[id].setId(id);
 			return m_rooms[id];
 		}
@@ -211,7 +211,7 @@ final class Room
 	string getAnswer(){
 		return answer;
 	}
-	void addMessage(string name, string message,string answer)
+	void addMessage(string name, string message, string answer)
 	{
 		bool reservada = palavrasChave.checaComandos(message);
 		string serverlog1,serverlog2,serverlog3;
@@ -287,9 +287,9 @@ final class Room
 
 
 			}	
-			writeln(answer);
+			
 
-			if(m_room[id].anwser == message){
+			if(answer == message){
 				messages ~= name ~ " >> GANHOU << " ;
 			}
 	
