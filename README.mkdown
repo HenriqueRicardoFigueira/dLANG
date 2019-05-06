@@ -1,11 +1,24 @@
 # APS de Linguagens de Programação
 ## Implementação em D do jogo "Quem eu sou?" 
 
-
+### Compilar no Windows 
 > dub --build=release
 
+### Compilar no Linux
+> dub
 
 Alunos: 
 > Higor Luiz F. Celante
 \\
 > Henrique Ricardo Figueira
+
+
+## Regras
+
+> A regras são simples:   
+> Um fala de cada vez  
+> Sempre que um player pergunta, é vez do mestre responder    
+> O mestre só pode responder 'sim' ou 'nao'    
+> Ganha quem falar primeiro o personagem que o mestre é    
+				
+		
