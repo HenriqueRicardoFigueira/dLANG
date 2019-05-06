@@ -137,7 +137,12 @@ class palavrasChaves
 
 	string comandoHelp()
 	{
-		string a = "HELP | /help | QUIT | /quit";
+		string a = "  > Para sair > QUIT | /quit \n				> Para saber as regras >  RULES | /rules \n";
+		return a;
+	}
+	string comandoRules()
+	{
+		string a = "  > A regras são simples: \n				> Um fala de cada vez \n				> Sempre que um player pergunta, é vez do mestre responder \n				> O mestre só pode responder 'sim' ou 'nao' \n				> Ganha quem acertar primeiro o personagem que o mestre é \n				> O mestre que comanda a sala e avisa quem ganha com o comando (GANHADOR player)";				
 		return a;
 	}
 }
@@ -276,6 +281,14 @@ final class Room
 
 			}	
 	
+		}
+		if ((message == "HELP")||(message == "/help")){
+			string aux = palavrasChave.comandoHelp();
+			messages ~= name ~ ": " ~ aux;
+			}
+		else if(message == "RULES"){
+			string aux = palavrasChave.comandoRules();
+			messages ~= name ~ ": " ~ aux;
 		}
 
 		messageEvent.emit();
