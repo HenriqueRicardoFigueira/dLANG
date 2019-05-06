@@ -171,9 +171,9 @@ final class Player
 		this.master = xxx;
 	}
 
-	void setScore(int result)
+	void setScore()
 	{
-		this.score = result;
+		this.score += 10;
 	}
 }
 
@@ -236,11 +236,7 @@ final class Room
 				return;
 			}
 		}	
-		if((message == answer) && (!ismaster)){
-			messages ~= name ~ " >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)" ;
-			messageEvent.emit();
-			return;
-		}
+		
 
 		foreach(Player palavradavez ; lista){				
 			if (palavradavez.name == name){	
@@ -255,6 +251,15 @@ final class Room
 				c++;
 			}
 		Player player = m_player[c];
+		
+		if((message == answer) && (!ismaster)){
+			messages ~= name ~ " >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)" ;
+			player.setScore();
+			saveLog(messages);
+			messageEvent.emit();
+			return;
+		}
+		
 		if((newpersona.length > 0) && (ismaster)){
 			newpersona = null;
 			setAnswer(message);
@@ -386,6 +391,26 @@ final class Room
 	{
 		string a = "HELP | /help | QUIT | /quit | NEWGAME se for mestre\n ";
 		return a;
+	}
+
+	void saveLog(string[] message)
+	{
+		File file = File("logSala", "w+");
+		file.writeln("Sala:" , id);
+		file.writeln("Tema:" , tema);
+		foreach(Player playerdavez ; m_player){				
+			file.writeln("Player:", playerdavez.name);
+			file.writeln("Score:", playerdavez.score);
+			file.writeln("Mestre:", playerdavez.master);
+			file.writeln("\n");
+		}
+		
+		file.writeln("-----------------------------------------------------------------------------------------------");
+		file.writeln("Log Messages");
+		foreach(string x; message)
+		{
+			file.writeln(x);	
+		}
 	}
 }
 
