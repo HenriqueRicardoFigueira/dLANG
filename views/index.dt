@@ -5,6 +5,7 @@ html
 	body
 		h1 Welcome to Who I'am
 		p Please select an option:
+		
 
 		form(action='/newplayer', method='GET')
 			button(type='submit') - ENTER AN EXISTING ROOM -
@@ -12,6 +13,13 @@ html
 
 		form(action='/newroom', method='GET')
 			button(type='submit') - 	CREATE A NEW ROOM	- 
+
+		p For more informations about rules or implementation:
+
+		form(action='https://github.com/HenriqueRicardoFigueira/dLANG', method='GET')
+			button(type='submit') - 	Github	- 
+
+		
 
 
 
