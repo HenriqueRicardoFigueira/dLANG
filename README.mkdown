@@ -7,6 +7,8 @@
 ### Compilar no Linux
 > dub
 
+### Para jogar no Windows basta executar o "whod.exe"
+
 Alunos: 
 > Higor Luiz F. Celante
 >
@@ -18,6 +20,14 @@ Alunos:
 1. Um fala de cada vez, uma vez enviada a mensagem o player fica mutado até ser a vez dele   
 2. Sempre que um player pergunta, é vez do mestre responder    
 3. O mestre só pode responder 'sim' ou 'nao'    
-4. Ganha quem falar primeiro o personagem que o mestre é    
+4. Ganha quem falar primeiro o personagem que o mestre é   
+
+## COMANDOS DO MESTRE
+
+### NOVA PERSONA
+> O mestre pode trocar a persona da partida usando o comando NEWGAME [ENTER] e em seguida o nome da nova persona "NOVAPERSONA" [ENTER]
+> O nome da persona deve ser sempre em caixa alta
 				
-		
+### SIM/sim OU NAO/nao
+> As duas únicas palavras que o mestre pode falar
+> A partida inicia quando a sala tem outro player além do mestre e o mestre fala (sim ou nao)

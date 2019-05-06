@@ -15,4 +15,5 @@ html
 				input#name(type="text", name="name")
 			p
 				input#name(type="hidden", name="tema")
+				input#name(type="hidden", name="answer")
 			button(type="submit") Enter

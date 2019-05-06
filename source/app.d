@@ -1,6 +1,6 @@
 import vibe.d;
 import std.stdio;
-
+string newpersona;
 class WebChats
 {
 	private Room[string] m_rooms;
@@ -203,20 +203,23 @@ final class Room
 	void setAnswer(string answer)
 	{
 		this.answer = answer;
+
 	}
 
 	string getAnswer(){
 		return answer;
 	}
+	
 	void addMessage(string name, string message, string answer)
 	{
+
 		bool reservada = palavrasChave.checaComandos(message);
 		string serverlog1,serverlog2,serverlog3;
 		int c = 0;
 		bool ismaster = false;
 		Player[] lista = m_player;
 		bool winner = false;
-		
+
 		if ((reservada == 1)){	
 		 // COMANDOS DOS PLAYERS
 			if ((message == "/quit") || (message == "QUIT")){
@@ -233,7 +236,11 @@ final class Room
 				return;
 			}
 		}	
-
+		if((message == answer) && (!ismaster)){
+			messages ~= name ~ " >> GANHOU <<  (Mestre use o comando NEWGAME para começar com uma nova persona)" ;
+			messageEvent.emit();
+			return;
+		}
 
 		foreach(Player palavradavez ; lista){				
 			if (palavradavez.name == name){	
@@ -248,6 +255,13 @@ final class Room
 				c++;
 			}
 		Player player = m_player[c];
+		if((newpersona.length > 0) && (ismaster)){
+			newpersona = null;
+			setAnswer(message);
+			messages ~= name ~ " - > MUDOU A PERSONA DA PARTIDA < - " ;
+			messageEvent.emit();
+			return; 
+		}
 		if ((winner == false) && (player.token == true) &&(message.length > 1)){	
 			player.setToken(false);
 
@@ -282,6 +296,9 @@ final class Room
 					}
 					else if((message == "NAO") || (message =="nao")){
 						messages ~= name ~  ": " ~"Não";
+					}else if(message == "NEWGAME"){
+						newpersona = "80028922";
+						return;
 					}
 		
 
@@ -367,7 +384,7 @@ final class Room
 
 	string comandoHelp()
 	{
-		string a = "HELP | /help | QUIT | /quit";
+		string a = "HELP | /help | QUIT | /quit | NEWGAME se for mestre\n ";
 		return a;
 	}
 }
