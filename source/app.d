@@ -14,6 +14,10 @@ class WebChats
 	{
 		res.render!("newplayer.dt");
 	}
+
+	void getNewroom(HTTPServerResponse res){
+		res.render!("newroom.dt");
+	}
 /*
 	void getWS(string room, string name, scope WebSocket socket)
 	{
@@ -259,6 +263,8 @@ final class Room
 			newpersona = null;
 			setAnswer(message);
 			messages ~= name ~ " - > MUDOU A PERSONA DA PARTIDA < - " ;
+			messageEvent.emit();
+			messages ~= name ~ " Player da vez, faça uma pergunta. " ;
 			messageEvent.emit();
 			return; 
 		}

@@ -1,0 +1,27 @@
+doctype html
+html
+	head
+		title Welcome Who I'am
+	body
+		h1 Welcome to Who I'am
+		p Create a new room:
+
+		
+
+		form(action="/room", method="GET")
+			p
+				label(for="id") Chat room:
+				input#id(type="text", name="id", autofocus=true)
+			p
+				label(for="name") Your name:
+				input#name(type="text", name="name")
+			p
+				label(for="tema") Your theme:
+				input(type="text", name="tema")
+			p	
+				label(for="persona") Your persona:
+				input#name(type="text", name="answer")
+
+
+				
+			button(type="submit") Enter

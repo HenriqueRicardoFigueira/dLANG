@@ -4,26 +4,15 @@ html
 		title Welcome Who I'am
 	body
 		h1 Welcome to Who I'am
-		p Please enter the name of a chat room to join the game:
+		p Please select an option:
 
 		form(action='/newplayer', method='GET')
-			button(type='submit') New Player:
+			button(type='submit') - ENTER AN EXISTING ROOM -
 		
 
-		form(action="/room", method="GET")
-			p
-				label(for="id") Chat room:
-				input#id(type="text", name="id", autofocus=true)
-			p
-				label(for="name") Your name:
-				input#name(type="text", name="name")
-			p
-				label(for="tema") Your theme:
-				input(type="text", name="tema")
-			p	
-				label(for="persona") Your persona:
-				input#name(type="text", name="answer")
+		form(action='/newroom', method='GET')
+			button(type='submit') - 	CREATE A NEW ROOM	- 
 
 
-				
-			button(type="submit") Enter
+
+
