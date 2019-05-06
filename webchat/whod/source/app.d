@@ -19,14 +19,12 @@ class WebChats
 	{
 		writeln("getWS");
 		auto r = getOrCreateRoom(room);
-
 		// watch for new messages in the history and send them
 		// to the client
 		runTask({
 			// keep track of the last message that got already sent to the client
 			// we assume that we sent all message so far
 			auto next_message = r.messages.length;
-
 			// send new messages as they come in
 			while (socket.connected)
 			{
@@ -35,7 +33,6 @@ class WebChats
 				r.waitForMessage(next_message);
 			}
 		});
-
 		// receive messages from the client and add it to the history
 		while (socket.waitForData)
 		{
@@ -220,6 +217,24 @@ final class Room
 		Player[] lista = m_player;
 		bool winner = false;
 		
+		if ((reservada == 1)){	
+		 // COMANDOS DOS PLAYERS
+			if ((message == "/quit") || (message == "QUIT")){
+				palavrasChave.comandoQuit();
+				//				m_rooms[id].members[]
+				messages ~= name ~ "Saiu >>>| .|<<<";
+				messageEvent.emit();
+				return;
+			}
+			else if (message == "HELP"){
+				string aux = palavrasChave.comandoHelp();
+				messages ~= name ~ ": " ~ aux;
+				messageEvent.emit();
+				return;
+			}
+		}	
+
+
 		foreach(Player palavradavez ; lista){				
 			if (palavradavez.name == name){	
 				
@@ -235,22 +250,28 @@ final class Room
 		Player player = m_player[c];
 		if ((winner == false) && (player.token == true) &&(message.length > 1)){	
 			player.setToken(false);
-			if (contador ==( m_player.length)-1){
-				writeln("token zerado");
-				m_player[0].setToken(true);
 
-				serverlog1 = " token zerado. Sua vez mestre!"; 
+			int vari = 0;
+			if ((contador ==( m_player.length)-1)){
+				writeln("token zerado");
 				contador = 0;
+				m_player[0].setToken(true);				
+				vari = 1;
+
+
 			}else if(ismaster){
 				//m_player[0].setToken(true);
+				
 				writeln("token pro player");
 				contador ++;
-				serverlog2 =  " Sua vez!";
 				m_player[contador].setToken(true);
+				vari = 2;
+
 			}else if(!ismaster){
 				writeln("token pro mestre");
 				m_player[0].setToken(true);
-				serverlog3 = " Sua vez mestre!"; 
+
+				vari = 3;
 				
 			}
 			
@@ -265,21 +286,7 @@ final class Room
 		
 
 			}
-			else if ((reservada == 1)){	
 
-
-
-				 // COMANDOS DOS PLAYERS
-					if ((message == "/quit") || (message == "QUIT")){
-						palavrasChave.comandoQuit();
-							//				m_rooms[id].members[]
-						messages ~= name ~ "Saiu >>>| .|<<<";
-					}
-					else if (message == "HELP"){
-						string aux = palavrasChave.comandoHelp();
-						messages ~= name ~ ": " ~ aux;
-					}
-			}	
 
 			else {
 				
@@ -291,6 +298,22 @@ final class Room
 
 			if(answer == message){
 				messages ~= name ~ " >> GANHOU << " ;
+			}
+			if(vari != 0){
+				if (vari == 1){
+					serverlog1 = " Sua vez mestre!"; 
+					
+					messages ~= serverlog1;
+					
+				}else if (vari == 2){
+					serverlog2 = " Sua vez player ->";
+					
+					messages ~= serverlog2 ~ m_player[contador].name;
+
+				}else if (vari == 3){
+					serverlog3 = " Sua vez mestre!"; 
+				}
+				messageEvent.emit();
 			}
 	
 		}
