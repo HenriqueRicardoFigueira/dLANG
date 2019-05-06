@@ -14,7 +14,7 @@ class WebChats
 	{
 		res.render!("newplayer.dt");
 	}
-
+/*
 	void getWS(string room, string name, scope WebSocket socket)
 	{
 		writeln("getWS");
@@ -44,11 +44,11 @@ class WebChats
 				r.addMessage(name, message);
 		}
 	}
-
+*/
 	void getRoom(string id, string name, string tema, string answer)
 	{
 		string[] members;
-		auto messages = getOrCreateRoom(id).messages;
+		auto messages = getOrCreateRoom(id,answer).messages;
 		bool x =  m_rooms[id].checkPlayer(name);
 		int c = 0;
 		
@@ -82,11 +82,11 @@ class WebChats
 	{	
 		string tema = m_rooms[id].tema;
 		if (message.length)
-			getOrCreateRoom(id).addMessage(name, message);
+			getOrCreateRoom(id,answer).addMessage(name, message,answer);
 		redirect("room?id=" ~ id.urlEncode ~ "&name=" ~ name.urlEncode ~ "&tema=" ~ tema.urlEncode ~ "&answer=" ~ answer.urlEncode);
 	}
 
-	private Room getOrCreateRoom(string id)
+	private Room getOrCreateRoom(string id,string answer)
 	{
 		
 		if (auto pr = id in m_rooms)
@@ -96,11 +96,14 @@ class WebChats
 		}else
 		
 		{
+			writeln(answer);
 			m_rooms[id] = new Room;
+			m_rooms[id].setAnswer(answer);
 			m_rooms[id].setId(id);
 			return m_rooms[id];
 		}
 	}
+	
 
 }
 
@@ -205,7 +208,10 @@ final class Room
 		this.answer = answer;
 	}
 
-	void addMessage(string name, string message)
+	string getAnswer(){
+		return answer;
+	}
+	void addMessage(string name, string message,string answer)
 	{
 		bool reservada = palavrasChave.checaComandos(message);
 		string serverlog1,serverlog2,serverlog3;
@@ -227,7 +233,7 @@ final class Room
 				c++;
 			}
 		Player player = m_player[c];
-		if ((winner == false) && (player.token == true) &&(message.length > 0)){	
+		if ((winner == false) && (player.token == true) &&(message.length > 1)){	
 			player.setToken(false);
 			if (contador ==( m_player.length)-1){
 				writeln("token zerado");
@@ -273,13 +279,19 @@ final class Room
 						string aux = palavrasChave.comandoHelp();
 						messages ~= name ~ ": " ~ aux;
 					}
-				
-			}else {
+			}	
+
+			else {
 				
 				messages ~= name ~ ": " ~ message;
 
 
 			}	
+			writeln(answer);
+
+			if(m_room[id].anwser == message){
+				messages ~= name ~ " >> GANHOU << " ;
+			}
 	
 		}
 		if ((message == "HELP")||(message == "/help")){
