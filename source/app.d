@@ -212,21 +212,33 @@ final class Room
 	{
 		this.answer = answer;
 	}
-/*
-	void recriarListaPlayer(int i){
-		int cont  = 0;
-		int cont2 = 0;
-		Player[] newplayerlist;
-		while (cont < m_player.length){
-			if(cont != i){
-				newplayerlist[cont] = m_player[cont2];
-				cont++;
-			}
-			cont2++;
+
+	void removePlayer(string name){
+		Player[] newm_player;
+		string[] new_members;
+		int c;
+		foreach(Player x ; m_player)
+		{
+			if(x.name != name)
+				newm_player ~= x;
+			if(x.name == name)
+				if(x.token == true)
+					//duas versoes ou o token volta para o mestre
+					//m_player[0].setToken(true);
+					//ou o token vai para o proximo jogador
+					m_player[c+1].setToken(true);
+			c++;
 		}
-		m_player = newplayerlist;
+		foreach(string y ; members)
+		{	
+			if(y != name)
+				new_members ~= y;
+		}
+
+		m_player = newm_player;
+		members = new_members;
 	}
-*/
+
 	string getAnswer()
 	{
 		return answer;
@@ -263,9 +275,8 @@ final class Room
 			if ((message == "/quit") || (message == "QUIT"))
 			{
 				palavrasChave.comandoQuit();
-				//				m_rooms[id].members[]
 				messages ~= name ~ "	Saiu >>>| .|<<<";
-				//recriarListaPlayer(c);
+				removePlayer(name);
 				messageEvent.emit();
 				return;
 			}
