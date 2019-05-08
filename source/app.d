@@ -414,6 +414,8 @@ final class Room
 		}
 		m_player ~= p1;
         members ~= p1.name;
+		messages ~= p1.name ~ " 	Entrou na sala. " ;
+		messageEvent.emit();
         writeln(p1.master);
     }
 
