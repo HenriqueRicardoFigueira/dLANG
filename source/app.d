@@ -212,7 +212,16 @@ final class Room
 	{
 		this.answer = answer;
 	}
-
+	int playerdavez(Player[] m_player){
+		int tam = m_player.length;
+		int i = 0;
+		for(i = 0; i < tam; i++){
+			if(m_player[i].token == true){
+				return i;
+			}
+		}
+		return i;
+	}
 	void removePlayer(string name){
 		Player[] newm_player;
 		string[] new_members;
@@ -227,6 +236,9 @@ final class Room
 					//m_player[0].setToken(true);
 					//ou o token vai para o proximo jogador
 					m_player[c+1].setToken(true);
+
+		
+
 			c++;
 		}
 		foreach(string y ; members)
@@ -237,6 +249,7 @@ final class Room
 
 		m_player = newm_player;
 		members = new_members;
+		
 	}
 
 	string getAnswer()
@@ -272,11 +285,19 @@ final class Room
 		if ((reservada == 1))
 		{	
 		 // COMANDOS DOS PLAYERS
-			if ((message == "/quit") || (message == "QUIT"))
+			if ((message == "/quit") || (message == "QUIT")) 
 			{
+				if (player.ismaster == true){
+					//EXCLUIR A SALA DA LISTA DE SALAS
+					//ENVIAR O MESTRE PRO INDEX
+					return;
+				}
 				palavrasChave.comandoQuit();
 				messages ~= name ~ "	Saiu >>>| .|<<<";
 				removePlayer(name);
+				//
+				int playervezid = playerdavez(m_player);
+				messages ~= m_player[playervezid].name  ~ " É o player da vez. " ;
 				messageEvent.emit();
 				return;
 			}
